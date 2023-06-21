@@ -1,0 +1,104 @@
+---
+title: "An Introduction to SOHPIE"
+author: "Seungjun Ahn"
+date: "June 16th, 2023"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{my-vignette}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+We introduce a Statistical Approach via Pseudo-value Information and Estimation for Differential Network Analysis (SOHPIE; pronounced as "Sofie") [1]. This is a regression modeling method for differential network (DN) analysis that can include covariate information in analyzing microbiome data. 
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+
+## Requirements
+Please install these R packages prior to use SOHPIE-DNA.
+```{r}
+# library(robustbase) # To fit a robust regression.
+# library(parallel) # To use mclapply() when reestimating the association matrix.
+# library(dplyr)  # For the convenience of tabulating p-values, coefficients, and q-values.
+# library(fdrtool) # For false discovery rate control.
+# library(gtools) # To estimate an association matrix via SparCC.
+```
+
+
+```{r setup}
+library(SOHPIE)
+```
+
+### Example: Load the COPDGene study data from PRANA R package:
+Two sample datasets are available in this package. One (`combinedamgut`) is from the American Gut Project [2] and contains 138 taxa and 268 subjects. In this user manual, the first 30 out of 138 taxa will be used for the simple demonstration purpose. The other (`combineddietswap`) is from the geographical epidemiology study of diet swap intervention [3] that includes 112 taxa with 37 subjects (20 African Americans from Pittsburgh and 17 rural South Africans). The full data of each study are available in the SpiecEasi and microbiome R packages, respectively.
+
+```{r}
+set.seed(20050505)
+data(combinedamgut) # A complete data containing columns with taxa and clinical covariates.
+```
+
+
+### Data processing for the toy example using sample dataset from American Gut Project:
+The main grouping variable will be the indicator variable for the status of living with a dog. After the data processing, the indices of subjects will be available for each 'Not living with a dog (Group A)' vs. 'Living with a dog (Group B).' We need these indices for the estimation of group-specific $p \times p$ association matrices (and re-estimation of association matrices for pseudo-value calculations later).
+```{r}
+# Note: Again, we will use a toy example with the first 30 out of 138 taxa.
+OTUtab = combinedamgut[ , 8:37]
+
+# Clinical/demographic covariates (phenotypic data):
+# Note: All of these covariates in phenodat below will be included in the regression 
+#       when you use SOHPIE_DNA function later. Please make sure 
+#       phenodat below include variables that will be analyzed only.
+phenodat = combinedamgut[, 1:7] # first column is ID, so not using it.
+```
+
+```{r}
+# Obtain indices of each grouping factor.
+# In this example, a variable indicating the status of living with a dog was chosen (i.e. bin_dog).
+# Accordingly, Groups A and B imply living without and with a dog, respectively.
+newindex_grpA = which(combinedamgut$bin_dog == 0)
+newindex_grpB = which(combinedamgut$bin_dog == 1)
+```
+
+
+### Fit a pseudo-value regression via SOHPIE_DNA() function:
+Upon our data processing step above is complete, we can then fit a pseudo-value regression using `SOHPIE_DNA` function. An important note! Please provide the object name of each OTU table and clinical/demographic data (i.e. metadata) separately in the function. In addition, you must indicate the object names of the indices for each group of a binary indicator variable that is used as a main predictor variable (e.g. living with a dog vs. without a dog).
+```{r}
+SOHPIEres <- SOHPIE_DNA(OTUdat = OTUtab, clindat = phenodat, 
+                        groupA = newindex_grpA, groupB = newindex_grpB)
+```
+
+### Additional features available in SOHPIE package:
+Now, I would like to show you that SOHPIE has some convenient tools/functions after fitting a pseudo-value regression. There are functions that you can quickly extract names of taxa that are significantly differentially connected (DC; `DCtaxa_tab`), as well as adjusted p-values (q-values; `qval` and `qval_specific_var`) and coefficient estimates (`coeff` and `coeff_specific_var`) of all variables that are considered in the regression or a specific variable.
+```{r}
+# qval() function will get you a table with q-values.
+qval(SOHPIEres)
+```
+`qval_specific_var` function will be useful to retrieve the q-values of a specific variable, `bin_dog` in this example.  
+
+```{r}
+# Create an object to keep the table with q-values.
+qvaltab <- qval(SOHPIEres)
+# Retrieve a vector of q-values for a single variable of interest.
+qval_specific_var(qvaltab = qvaltab, varname = "bin_dog")
+```
+
+`DCtaxa_tab` will return a list containing of (1) names and q-values of taxa that are significantly DC between two biological conditions and (2) names of DC taxa only. 
+```{r}
+# Please do NOT forget to provide the name of variable in DCtaxa_tab(groupvar = )
+# and the level of significance (0.3 in this example).
+DCtaxa_tab <- DCtaxa_tab(qvaltab = qvaltab, groupvar = "bin_dog", alpha = 0.3)
+DCtaxa_tab
+```
+
+\newpage
+## References
+[1] Ahn S, Datta S. (2023). Differential Co-Abundance Network Analyses for Microbiome Data Adjusted for Clinical Covariates Using Jackknife Pseudo-Values. Under Review at $\textit{BMC Bioinformatics}$.
+
+[2] McDonald D. et al. (2018). American Gut: an Open Platform for Citizen Science Microbiome Research. $\textit{mSystems}$. **3**(3), e00031–18
+
+[3] O'Keefe SJ. et al. (2015). Fat, fibre and cancer risk in African Americans and rural Africans. $\textit{Nat Commun}$. **6**, 6342

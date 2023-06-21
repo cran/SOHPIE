@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Seungjun Ahn" />
+
+
+<title>An Introduction to SOHPIE</title>
+
+<script>// Hide empty <a> tag within highlighted CodeBlock for screen reader accessibility (see https://github.com/jgm/pandoc/issues/6352#issuecomment-626106786) -->
+// v0.0.1
+// Written by JooYoung Seo (jooyoung@psu.edu) and Atsushi Yasumoto on June 1st, 2020.
+
+document.addEventListener('DOMContentLoaded', function() {
+  const codeList = document.getElementsByClassName("sourceCode");
+  for (var i = 0; i < codeList.length; i++) {
+    var linkList = codeList[i].getElementsByTagName('a');
+    for (var j = 0; j < linkList.length; j++) {
+      if (linkList[j].innerHTML === "") {
+        linkList[j].setAttribute('aria-hidden', 'true');
+      }
+    }
+  }
+});
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
+<style type="text/css" data-origin="pandoc">
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">An Introduction to SOHPIE</h1>
+<h4 class="author">Seungjun Ahn</h4>
+<h4 class="date">June 16th, 2023</h4>
+
+
+
+<p>We introduce a Statistical Approach via Pseudo-value Information and Estimation for Differential Network Analysis (SOHPIE; pronounced as “Sofie”) [1]. This is a regression modeling method for differential network (DN) analysis that can include covariate information in analyzing microbiome data.</p>
+<div id="requirements" class="section level2">
+<h2>Requirements</h2>
+<p>Please install these R packages prior to use SOHPIE-DNA.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="co"># library(robustbase) # To fit a robust regression.</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="co"># library(parallel) # To use mclapply() when reestimating the association matrix.</span></span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="co"># library(dplyr)  # For the convenience of tabulating p-values, coefficients, and q-values.</span></span>
+<span id="cb1-4"><a href="#cb1-4"></a><span class="co"># library(fdrtool) # For false discovery rate control.</span></span>
+<span id="cb1-5"><a href="#cb1-5"></a><span class="co"># library(gtools) # To estimate an association matrix via SparCC.</span></span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw">library</span>(SOHPIE)</span></code></pre></div>
+<div id="example-load-the-copdgene-study-data-from-prana-r-package" class="section level3">
+<h3>Example: Load the COPDGene study data from PRANA R package:</h3>
+<p>Two sample datasets are available in this package. One (<code>combinedamgut</code>) is from the American Gut Project [2] and contains 138 taxa and 268 subjects. In this user manual, the first 30 out of 138 taxa will be used for the simple demonstration purpose. The other (<code>combineddietswap</code>) is from the geographical epidemiology study of diet swap intervention [3] that includes 112 taxa with 37 subjects (20 African Americans from Pittsburgh and 17 rural South Africans). The full data of each study are available in the SpiecEasi and microbiome R packages, respectively.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="kw">set.seed</span>(<span class="dv">20050505</span>)</span>
+<span id="cb3-2"><a href="#cb3-2"></a><span class="kw">data</span>(combinedamgut) <span class="co"># A complete data containing columns with taxa and clinical covariates.</span></span></code></pre></div>
+</div>
+<div id="data-processing-for-the-toy-example-using-sample-dataset-from-american-gut-project" class="section level3">
+<h3>Data processing for the toy example using sample dataset from American Gut Project:</h3>
+<p>The main grouping variable will be the indicator variable for the status of living with a dog. After the data processing, the indices of subjects will be available for each ‘Not living with a dog (Group A)’ vs. ‘Living with a dog (Group B).’ We need these indices for the estimation of group-specific <span class="math inline">\(p \times p\)</span> association matrices (and re-estimation of association matrices for pseudo-value calculations later).</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="co"># Note: Again, we will use a toy example with the first 30 out of 138 taxa.</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a>OTUtab =<span class="st"> </span>combinedamgut[ , <span class="dv">8</span><span class="op">:</span><span class="dv">37</span>]</span>
+<span id="cb4-3"><a href="#cb4-3"></a></span>
+<span id="cb4-4"><a href="#cb4-4"></a><span class="co"># Clinical/demographic covariates (phenotypic data):</span></span>
+<span id="cb4-5"><a href="#cb4-5"></a><span class="co"># Note: All of these covariates in phenodat below will be included in the regression </span></span>
+<span id="cb4-6"><a href="#cb4-6"></a><span class="co">#       when you use SOHPIE_DNA function later. Please make sure </span></span>
+<span id="cb4-7"><a href="#cb4-7"></a><span class="co">#       phenodat below include variables that will be analyzed only.</span></span>
+<span id="cb4-8"><a href="#cb4-8"></a>phenodat =<span class="st"> </span>combinedamgut[, <span class="dv">1</span><span class="op">:</span><span class="dv">7</span>] <span class="co"># first column is ID, so not using it.</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="co"># Obtain indices of each grouping factor.</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="co"># In this example, a variable indicating the status of living with a dog was chosen (i.e. bin_dog).</span></span>
+<span id="cb5-3"><a href="#cb5-3"></a><span class="co"># Accordingly, Groups A and B imply living without and with a dog, respectively.</span></span>
+<span id="cb5-4"><a href="#cb5-4"></a>newindex_grpA =<span class="st"> </span><span class="kw">which</span>(combinedamgut<span class="op">$</span>bin_dog <span class="op">==</span><span class="st"> </span><span class="dv">0</span>)</span>
+<span id="cb5-5"><a href="#cb5-5"></a>newindex_grpB =<span class="st"> </span><span class="kw">which</span>(combinedamgut<span class="op">$</span>bin_dog <span class="op">==</span><span class="st"> </span><span class="dv">1</span>)</span></code></pre></div>
+</div>
+<div id="fit-a-pseudo-value-regression-via-sohpie_dna-function" class="section level3">
+<h3>Fit a pseudo-value regression via SOHPIE_DNA() function:</h3>
+<p>Upon our data processing step above is complete, we can then fit a pseudo-value regression using <code>SOHPIE_DNA</code> function. An important note! Please provide the object name of each OTU table and clinical/demographic data (i.e. metadata) separately in the function. In addition, you must indicate the object names of the indices for each group of a binary indicator variable that is used as a main predictor variable (e.g. living with a dog vs. without a dog).</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>SOHPIEres &lt;-<span class="st"> </span><span class="kw">SOHPIE_DNA</span>(<span class="dt">OTUdat =</span> OTUtab, <span class="dt">clindat =</span> phenodat, </span>
+<span id="cb6-2"><a href="#cb6-2"></a>                        <span class="dt">groupA =</span> newindex_grpA, <span class="dt">groupB =</span> newindex_grpB)</span></code></pre></div>
+</div>
+<div id="additional-features-available-in-sohpie-package" class="section level3">
+<h3>Additional features available in SOHPIE package:</h3>
+<p>Now, I would like to show you that SOHPIE has some convenient tools/functions after fitting a pseudo-value regression. There are functions that you can quickly extract names of taxa that are significantly differentially connected (DC; <code>DCtaxa_tab</code>), as well as adjusted p-values (q-values; <code>qval</code> and <code>qval_specific_var</code>) and coefficient estimates (<code>coeff</code> and <code>coeff_specific_var</code>) of all variables that are considered in the regression or a specific variable.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a><span class="co"># qval() function will get you a table with q-values.</span></span>
+<span id="cb7-2"><a href="#cb7-2"></a><span class="kw">qval</span>(SOHPIEres)</span>
+<span id="cb7-3"><a href="#cb7-3"></a><span class="co">#&gt;           bin_dog          age        sex  bin_floss bin_exercise cat_alcohol1</span></span>
+<span id="cb7-4"><a href="#cb7-4"></a><span class="co">#&gt; 326792 0.65184904 0.1389609733 0.90617331 0.05472762    0.7368758   0.27482645</span></span>
+<span id="cb7-5"><a href="#cb7-5"></a><span class="co">#&gt; 348374 0.58300569 0.2463704326 0.58241648 0.38025648    0.2493295   0.40114472</span></span>
+<span id="cb7-6"><a href="#cb7-6"></a><span class="co">#&gt; 181016 0.48996325 0.0913125647 0.87246819 0.56765606    0.4433666   0.48024987</span></span>
+<span id="cb7-7"><a href="#cb7-7"></a><span class="co">#&gt; 191687 0.57750814 0.0110468105 0.86275115 0.10030278    0.5383121   0.26896567</span></span>
+<span id="cb7-8"><a href="#cb7-8"></a><span class="co">#&gt; 305760 0.28750529 0.1752438021 0.60603659 0.58931824    0.6217049   0.09825625</span></span>
+<span id="cb7-9"><a href="#cb7-9"></a><span class="co">#&gt; 326977 0.20931924 0.5668848235 0.67190001 0.12065409    0.3597920   0.28059659</span></span>
+<span id="cb7-10"><a href="#cb7-10"></a><span class="co">#&gt; 194648 0.22253539 0.5332629827 0.64896236 0.05472762    0.7944077   0.22605114</span></span>
+<span id="cb7-11"><a href="#cb7-11"></a><span class="co">#&gt; 28186  0.36090220 0.0004095281 0.61171421 0.23415637    0.7085595   0.28961734</span></span>
+<span id="cb7-12"><a href="#cb7-12"></a><span class="co">#&gt; 541301 0.37686808 0.0050424024 0.79392896 0.11940747    0.7252734   0.47820453</span></span>
+<span id="cb7-13"><a href="#cb7-13"></a><span class="co">#&gt; 198941 0.15497052 0.5340275405 0.90737371 0.57932699    0.6579054   0.23606726</span></span>
+<span id="cb7-14"><a href="#cb7-14"></a><span class="co">#&gt; 353985 0.24596522 0.6198580596 0.85785119 0.55661429    0.2023414   0.02210682</span></span>
+<span id="cb7-15"><a href="#cb7-15"></a><span class="co">#&gt; 187524 0.59541018 0.6449340252 0.84454413 0.26575684    0.5515914   0.54860345</span></span>
+<span id="cb7-16"><a href="#cb7-16"></a><span class="co">#&gt; 182054 0.66167577 0.0886202057 0.38057886 0.26008467    0.7117856   0.25855048</span></span>
+<span id="cb7-17"><a href="#cb7-17"></a><span class="co">#&gt; 175537 0.48493346 0.4758601016 0.52449237 0.05472762    0.8121989   0.28767737</span></span>
+<span id="cb7-18"><a href="#cb7-18"></a><span class="co">#&gt; 9753   0.45091765 0.2809900536 0.91410489 0.53374251    0.6951400   0.06911578</span></span>
+<span id="cb7-19"><a href="#cb7-19"></a><span class="co">#&gt; 194211 0.23408249 0.4527357227 0.78797884 0.47187429    0.4613934   0.55318493</span></span>
+<span id="cb7-20"><a href="#cb7-20"></a><span class="co">#&gt; 188518 0.24425275 0.3958358319 0.91328534 0.69730083    0.6444959   0.20049119</span></span>
+<span id="cb7-21"><a href="#cb7-21"></a><span class="co">#&gt; 189396 0.41900690 0.2679203541 0.87290951 0.69564553    0.6466805   0.23556564</span></span>
+<span id="cb7-22"><a href="#cb7-22"></a><span class="co">#&gt; 90487  0.68779637 0.0722434282 0.90914994 0.55294579    0.6048882   0.20028213</span></span>
+<span id="cb7-23"><a href="#cb7-23"></a><span class="co">#&gt; 203708 0.67757620 0.6123421255 0.61715647 0.10261804    0.8063447   0.31020069</span></span>
+<span id="cb7-24"><a href="#cb7-24"></a><span class="co">#&gt; 173965 0.24713952 0.2124947280 0.88580005 0.38506751    0.8048103   0.24902645</span></span>
+<span id="cb7-25"><a href="#cb7-25"></a><span class="co">#&gt; 194661 0.01218206 0.5046086741 0.86654567 0.50931051    0.7330917   0.37324020</span></span>
+<span id="cb7-26"><a href="#cb7-26"></a><span class="co">#&gt; 512309 0.60922763 0.5682693101 0.81455958 0.40831356    0.6600038   0.54252226</span></span>
+<span id="cb7-27"><a href="#cb7-27"></a><span class="co">#&gt; 170124 0.66152769 0.0016034816 0.77208715 0.65814980    0.7107611   0.28570121</span></span>
+<span id="cb7-28"><a href="#cb7-28"></a><span class="co">#&gt; 216862 0.44045115 0.5521486658 0.87933814 0.08408232    0.4631340   0.32678431</span></span>
+<span id="cb7-29"><a href="#cb7-29"></a><span class="co">#&gt; 352304 0.66717079 0.5200318452 0.84973277 0.65578900    0.5957770   0.27854988</span></span>
+<span id="cb7-30"><a href="#cb7-30"></a><span class="co">#&gt; 191306 0.60299785 0.0783352663 0.07426693 0.50851045    0.2885065   0.37913124</span></span>
+<span id="cb7-31"><a href="#cb7-31"></a><span class="co">#&gt; 191541 0.66687266 0.6408471387 0.82777326 0.06454390    0.4227028   0.23663949</span></span>
+<span id="cb7-32"><a href="#cb7-32"></a><span class="co">#&gt; 191547 0.24657357 0.3218825745 0.86869995 0.18362275    0.7720381   0.42548884</span></span>
+<span id="cb7-33"><a href="#cb7-33"></a><span class="co">#&gt; 195493 0.42819397 0.2502292584 0.90741229 0.65392874    0.7755484   0.53809805</span></span>
+<span id="cb7-34"><a href="#cb7-34"></a><span class="co">#&gt;        cat_alcohol2 bin_migraine</span></span>
+<span id="cb7-35"><a href="#cb7-35"></a><span class="co">#&gt; 326792   0.28342500 0.1994183306</span></span>
+<span id="cb7-36"><a href="#cb7-36"></a><span class="co">#&gt; 348374   0.24695632 0.2963821197</span></span>
+<span id="cb7-37"><a href="#cb7-37"></a><span class="co">#&gt; 181016   0.27372862 0.6781458306</span></span>
+<span id="cb7-38"><a href="#cb7-38"></a><span class="co">#&gt; 191687   0.24144296 0.1488682335</span></span>
+<span id="cb7-39"><a href="#cb7-39"></a><span class="co">#&gt; 305760   0.31904174 0.6720119714</span></span>
+<span id="cb7-40"><a href="#cb7-40"></a><span class="co">#&gt; 326977   0.07813721 0.6459028932</span></span>
+<span id="cb7-41"><a href="#cb7-41"></a><span class="co">#&gt; 194648   0.45471383 0.6835435515</span></span>
+<span id="cb7-42"><a href="#cb7-42"></a><span class="co">#&gt; 28186    0.27062487 0.6299888603</span></span>
+<span id="cb7-43"><a href="#cb7-43"></a><span class="co">#&gt; 541301   0.50805246 0.1914264363</span></span>
+<span id="cb7-44"><a href="#cb7-44"></a><span class="co">#&gt; 198941   0.20841234 0.3120604923</span></span>
+<span id="cb7-45"><a href="#cb7-45"></a><span class="co">#&gt; 353985   0.17087028 0.1755102727</span></span>
+<span id="cb7-46"><a href="#cb7-46"></a><span class="co">#&gt; 187524   0.43797294 0.0006258633</span></span>
+<span id="cb7-47"><a href="#cb7-47"></a><span class="co">#&gt; 182054   0.25053377 0.5509849337</span></span>
+<span id="cb7-48"><a href="#cb7-48"></a><span class="co">#&gt; 175537   0.38832256 0.4063732597</span></span>
+<span id="cb7-49"><a href="#cb7-49"></a><span class="co">#&gt; 9753     0.25576680 0.3182100461</span></span>
+<span id="cb7-50"><a href="#cb7-50"></a><span class="co">#&gt; 194211   0.33959878 0.3117821676</span></span>
+<span id="cb7-51"><a href="#cb7-51"></a><span class="co">#&gt; 188518   0.07813721 0.5813385833</span></span>
+<span id="cb7-52"><a href="#cb7-52"></a><span class="co">#&gt; 189396   0.26160370 0.2780263116</span></span>
+<span id="cb7-53"><a href="#cb7-53"></a><span class="co">#&gt; 90487    0.22589619 0.2071820407</span></span>
+<span id="cb7-54"><a href="#cb7-54"></a><span class="co">#&gt; 203708   0.25828792 0.0798324461</span></span>
+<span id="cb7-55"><a href="#cb7-55"></a><span class="co">#&gt; 173965   0.24483846 0.5675864474</span></span>
+<span id="cb7-56"><a href="#cb7-56"></a><span class="co">#&gt; 194661   0.30264968 0.4067857459</span></span>
+<span id="cb7-57"><a href="#cb7-57"></a><span class="co">#&gt; 512309   0.28074548 0.5802520112</span></span>
+<span id="cb7-58"><a href="#cb7-58"></a><span class="co">#&gt; 170124   0.42037666 0.2985925591</span></span>
+<span id="cb7-59"><a href="#cb7-59"></a><span class="co">#&gt; 216862   0.38326730 0.5371295483</span></span>
+<span id="cb7-60"><a href="#cb7-60"></a><span class="co">#&gt; 352304   0.47081255 0.2764918761</span></span>
+<span id="cb7-61"><a href="#cb7-61"></a><span class="co">#&gt; 191306   0.26664805 0.6517030651</span></span>
+<span id="cb7-62"><a href="#cb7-62"></a><span class="co">#&gt; 191541   0.26384779 0.4748121853</span></span>
+<span id="cb7-63"><a href="#cb7-63"></a><span class="co">#&gt; 191547   0.27502704 0.4780347064</span></span>
+<span id="cb7-64"><a href="#cb7-64"></a><span class="co">#&gt; 195493   0.26806946 0.5061621734</span></span></code></pre></div>
+<p><code>qval_specific_var</code> function will be useful to retrieve the q-values of a specific variable, <code>bin_dog</code> in this example.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a><span class="co"># Create an object to keep the table with q-values.</span></span>
+<span id="cb8-2"><a href="#cb8-2"></a>qvaltab &lt;-<span class="st"> </span><span class="kw">qval</span>(SOHPIEres)</span>
+<span id="cb8-3"><a href="#cb8-3"></a><span class="co"># Retrieve a vector of q-values for a single variable of interest.</span></span>
+<span id="cb8-4"><a href="#cb8-4"></a><span class="kw">qval_specific_var</span>(<span class="dt">qvaltab =</span> qvaltab, <span class="dt">varname =</span> <span class="st">&quot;bin_dog&quot;</span>)</span>
+<span id="cb8-5"><a href="#cb8-5"></a><span class="co">#&gt;           bin_dog</span></span>
+<span id="cb8-6"><a href="#cb8-6"></a><span class="co">#&gt; 326792 0.65184904</span></span>
+<span id="cb8-7"><a href="#cb8-7"></a><span class="co">#&gt; 348374 0.58300569</span></span>
+<span id="cb8-8"><a href="#cb8-8"></a><span class="co">#&gt; 181016 0.48996325</span></span>
+<span id="cb8-9"><a href="#cb8-9"></a><span class="co">#&gt; 191687 0.57750814</span></span>
+<span id="cb8-10"><a href="#cb8-10"></a><span class="co">#&gt; 305760 0.28750529</span></span>
+<span id="cb8-11"><a href="#cb8-11"></a><span class="co">#&gt; 326977 0.20931924</span></span>
+<span id="cb8-12"><a href="#cb8-12"></a><span class="co">#&gt; 194648 0.22253539</span></span>
+<span id="cb8-13"><a href="#cb8-13"></a><span class="co">#&gt; 28186  0.36090220</span></span>
+<span id="cb8-14"><a href="#cb8-14"></a><span class="co">#&gt; 541301 0.37686808</span></span>
+<span id="cb8-15"><a href="#cb8-15"></a><span class="co">#&gt; 198941 0.15497052</span></span>
+<span id="cb8-16"><a href="#cb8-16"></a><span class="co">#&gt; 353985 0.24596522</span></span>
+<span id="cb8-17"><a href="#cb8-17"></a><span class="co">#&gt; 187524 0.59541018</span></span>
+<span id="cb8-18"><a href="#cb8-18"></a><span class="co">#&gt; 182054 0.66167577</span></span>
+<span id="cb8-19"><a href="#cb8-19"></a><span class="co">#&gt; 175537 0.48493346</span></span>
+<span id="cb8-20"><a href="#cb8-20"></a><span class="co">#&gt; 9753   0.45091765</span></span>
+<span id="cb8-21"><a href="#cb8-21"></a><span class="co">#&gt; 194211 0.23408249</span></span>
+<span id="cb8-22"><a href="#cb8-22"></a><span class="co">#&gt; 188518 0.24425275</span></span>
+<span id="cb8-23"><a href="#cb8-23"></a><span class="co">#&gt; 189396 0.41900690</span></span>
+<span id="cb8-24"><a href="#cb8-24"></a><span class="co">#&gt; 90487  0.68779637</span></span>
+<span id="cb8-25"><a href="#cb8-25"></a><span class="co">#&gt; 203708 0.67757620</span></span>
+<span id="cb8-26"><a href="#cb8-26"></a><span class="co">#&gt; 173965 0.24713952</span></span>
+<span id="cb8-27"><a href="#cb8-27"></a><span class="co">#&gt; 194661 0.01218206</span></span>
+<span id="cb8-28"><a href="#cb8-28"></a><span class="co">#&gt; 512309 0.60922763</span></span>
+<span id="cb8-29"><a href="#cb8-29"></a><span class="co">#&gt; 170124 0.66152769</span></span>
+<span id="cb8-30"><a href="#cb8-30"></a><span class="co">#&gt; 216862 0.44045115</span></span>
+<span id="cb8-31"><a href="#cb8-31"></a><span class="co">#&gt; 352304 0.66717079</span></span>
+<span id="cb8-32"><a href="#cb8-32"></a><span class="co">#&gt; 191306 0.60299785</span></span>
+<span id="cb8-33"><a href="#cb8-33"></a><span class="co">#&gt; 191541 0.66687266</span></span>
+<span id="cb8-34"><a href="#cb8-34"></a><span class="co">#&gt; 191547 0.24657357</span></span>
+<span id="cb8-35"><a href="#cb8-35"></a><span class="co">#&gt; 195493 0.42819397</span></span></code></pre></div>
+<p><code>DCtaxa_tab</code> will return a list containing of (1) names and q-values of taxa that are significantly DC between two biological conditions and (2) names of DC taxa only.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a><span class="co"># Please do NOT forget to provide the name of variable in DCtaxa_tab(groupvar = )</span></span>
+<span id="cb9-2"><a href="#cb9-2"></a><span class="co"># and the level of significance (0.3 in this example).</span></span>
+<span id="cb9-3"><a href="#cb9-3"></a>DCtaxa_tab &lt;-<span class="st"> </span><span class="kw">DCtaxa_tab</span>(<span class="dt">qvaltab =</span> qvaltab, <span class="dt">groupvar =</span> <span class="st">&quot;bin_dog&quot;</span>, <span class="dt">alpha =</span> <span class="fl">0.3</span>)</span>
+<span id="cb9-4"><a href="#cb9-4"></a>DCtaxa_tab</span>
+<span id="cb9-5"><a href="#cb9-5"></a><span class="co">#&gt; $DCtaxa_complete_tab</span></span>
+<span id="cb9-6"><a href="#cb9-6"></a><span class="co">#&gt;           bin_dog</span></span>
+<span id="cb9-7"><a href="#cb9-7"></a><span class="co">#&gt; 305760 0.28750529</span></span>
+<span id="cb9-8"><a href="#cb9-8"></a><span class="co">#&gt; 326977 0.20931924</span></span>
+<span id="cb9-9"><a href="#cb9-9"></a><span class="co">#&gt; 194648 0.22253539</span></span>
+<span id="cb9-10"><a href="#cb9-10"></a><span class="co">#&gt; 198941 0.15497052</span></span>
+<span id="cb9-11"><a href="#cb9-11"></a><span class="co">#&gt; 353985 0.24596522</span></span>
+<span id="cb9-12"><a href="#cb9-12"></a><span class="co">#&gt; 194211 0.23408249</span></span>
+<span id="cb9-13"><a href="#cb9-13"></a><span class="co">#&gt; 188518 0.24425275</span></span>
+<span id="cb9-14"><a href="#cb9-14"></a><span class="co">#&gt; 173965 0.24713952</span></span>
+<span id="cb9-15"><a href="#cb9-15"></a><span class="co">#&gt; 194661 0.01218206</span></span>
+<span id="cb9-16"><a href="#cb9-16"></a><span class="co">#&gt; 191547 0.24657357</span></span>
+<span id="cb9-17"><a href="#cb9-17"></a><span class="co">#&gt; </span></span>
+<span id="cb9-18"><a href="#cb9-18"></a><span class="co">#&gt; $DCtaxa_names_only</span></span>
+<span id="cb9-19"><a href="#cb9-19"></a><span class="co">#&gt;  [1] &quot;305760&quot; &quot;326977&quot; &quot;194648&quot; &quot;198941&quot; &quot;353985&quot; &quot;194211&quot; &quot;188518&quot; &quot;173965&quot;</span></span>
+<span id="cb9-20"><a href="#cb9-20"></a><span class="co">#&gt;  [9] &quot;194661&quot; &quot;191547&quot;</span></span></code></pre></div>
+<div style="page-break-after: always;"></div>
+</div>
+</div>
+<div id="references" class="section level2">
+<h2>References</h2>
+<p>[1] Ahn S, Datta S. (2023). Differential Co-Abundance Network Analyses for Microbiome Data Adjusted for Clinical Covariates Using Jackknife Pseudo-Values. Under Review at <span class="math inline">\(\textit{BMC Bioinformatics}\)</span>.</p>
+<p>[2] McDonald D. et al. (2018). American Gut: an Open Platform for Citizen Science Microbiome Research. <span class="math inline">\(\textit{mSystems}\)</span>. <strong>3</strong>(3), e00031–18</p>
+<p>[3] O’Keefe SJ. et al. (2015). Fat, fibre and cancer risk in African Americans and rural Africans. <span class="math inline">\(\textit{Nat Commun}\)</span>. <strong>6</strong>, 6342</p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
