@@ -1,0 +1,80 @@
+#' @title pseudoreg
+#'
+#' @description A function to regress pseudo-values across set of covariates.
+#'
+#' @param pseudoval Jackknife pseudo-values calculated.
+#' @param clindat A metadata/phenotypic data consisting of the clinical 
+#'               and demographic variables that the user wants to include 
+#'               in the regression. (e.g., binary group indicator for 
+#'               intervention vs. control, continuous age, ...)
+#'
+#' @return A pseudo-value regression is fitted. Please use pseudoreg.summary()
+#'        to output p-values, q-values, and coefficient estimates.
+#'   
+#' @examples
+#' \donttest{
+#' # In this example, the subset of the American Gut Project data will be used.
+#' data(combinedamgut) # A complete data containing columns with taxa and clinical covariates.
+#'
+#' # Note: The line below will use a toy example with the first 30 out of 138 taxa.
+#' OTUtab = combinedamgut[ , 8:37]
+#' 
+#' #Clinical/demographic covariates (phenotypic data):
+#' # Note: All of these covariates will be included in the regression, so
+#' # please make sure that phenodat includes the variables that will be analyzed only.
+#' phenodat = combinedamgut[, 1:7] # first column is ID, so not using it.
+#' 
+#' # Obtain indices of each grouping factor
+#' # In this example, a variable indicating the status of living
+#' # with a dog was chosen (i.e. bin_dog).
+#' # Accordingly, Groups A and B imply living without and with a dog, respectively.
+#' newindex_grpA = which(combinedamgut$bin_dog == 0)
+#' newindex_grpB = which(combinedamgut$bin_dog == 1)
+#'
+#' # Now, we estimate (and re-estimate) association matrices 
+#' # for each group separately.
+#' asso_matA = asso_mat(OTUdat=OTUtab, group=newindex_grpA) 
+#' asso_matB = asso_mat(OTUdat=OTUtab, group=newindex_grpB) 
+#' 
+#' # Calculate the network centrality.
+#' thetahat_grpA = thetahats(asso_matA$assomat) 
+#' thetahat_grpB = thetahats(asso_matB$assomat)
+#' 
+#' # Obtain network centrality for the re-estimated association matrices.
+#' thetahat_drop_grpA = sapply(asso_matA$reest.assomat, thetahats)
+#' thetahat_drop_grpB = sapply(asso_matB$reest.assomat, thetahats)
+#' 
+#' # Sample sizes for each group.
+#' n_A <- length(newindex_grpA) 
+#' n_B <- length(newindex_grpB)
+#' 
+#' # Now calculate jackknife pseudo-values for each group.
+#' thetatilde_grpA = thetatildefun(thetahat_grpA, thetahat_drop_grpA, n_A)
+#' thetatilde_grpB = thetatildefun(thetahat_grpB, thetahat_drop_grpB, n_B)
+#' 
+#' thetatilde = rbind(thetatilde_grpA, thetatilde_grpB)
+#' 
+#' # Map the column names (taxa names)
+#' colnames(thetatilde) = colnames(OTUtab)
+#' 
+#' # Fit a pseudo-value regression using jackknife pseudovalues
+#' # and phenotypic data. A reminder that the phenotypic data should
+#' # contain a set of predictor variables to be fitted.
+#' fitmod = pseudoreg(pseudoval=thetatilde, clindat=phenodat)
+#' }
+#' @export
+#' @import robustbase
+
+
+pseudoreg <- function(pseudoval, clindat) {
+        
+        lapply(1:ncol(pseudoval), function(i) {
+        m <- pseudoval[, i]
+        df <- data.frame(clindat,
+                         m = m)
+        fit <- ltsReg(m ~ ., data = df, mcd=FALSE) # include a set of covariates in this model
+        return(fit) 
+        })
+}
+
+
