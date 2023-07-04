@@ -1,9 +1,10 @@
 #' @title sparcc wrapper
 #'
-#' @description Dr. Zachary Kurtz, the maintainer of SpiecEasi R package, says in his package that
-#' this is "a reimplementation of SparCC algorithm (Friedman et Alm 2012, PLoS Comp Bio, 2012)."
-#' Installation of SpiecEasi can sometimes generate errors, I have included Dr. Huaying Fang's sparcc wrapper
-#' as one of the functions in this package for the estimation of co-abundance networks.
+#' @description SpiecEasi R package, says in his package that
+#' this is "a reimplementation of SparCC algorithm (Friedman et Alm, PLoS Comp Bio, 2012)."
+#' Installation of SpiecEasi can sometimes generate errors, so I have included Dr. Huaying Fang's sparcc wrapper
+#' as one of the functions in this package for the estimation of co-abundance networks. His code was acquired from
+#' CCLasso (Fang et al, Bioinformatics, 2015), provided in GitHub (https://github.com/huayingfang/CCLasso).
 #'
 #' @param x count data matrix (OTU table)
 #' @param imax Number of iterations in the outer loop
