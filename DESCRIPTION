@@ -1,7 +1,7 @@
 Package: SOHPIE
 Type: Package
 Title: Statistical Approach via Pseudo-Value Information and Estimation
-Version: 1.0.5
+Version: 1.0.6
 Authors@R: c(
 	person("Seungjun", "Ahn", email = "seungjun.ahn@mountsinai.org",
 		 role = c("cre", "aut", "trl"),
@@ -19,9 +19,9 @@ Language: en-US
 VignetteBuilder: knitr
 Config/testthat/edition: 3
 NeedsCompilation: no
-Packaged: 2023-07-01 08:53:56 UTC; seungjunahn
+Packaged: 2023-10-23 17:20:16 UTC; seungjunahn
 Author: Seungjun Ahn [cre, aut, trl] (<https://orcid.org/0000-0002-4816-8924>),
   Somnath Datta [ctb, ths]
 Maintainer: Seungjun Ahn <seungjun.ahn@mountsinai.org>
 Repository: CRAN
-Date/Publication: 2023-07-04 14:03:04 UTC
+Date/Publication: 2023-10-23 17:50:02 UTC

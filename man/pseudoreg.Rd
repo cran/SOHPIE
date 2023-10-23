@@ -4,15 +4,18 @@
 \alias{pseudoreg}
 \title{pseudoreg}
 \usage{
-pseudoreg(pseudoval, clindat)
+pseudoreg(pseudoval, clindat, c)
 }
 \arguments{
 \item{pseudoval}{Jackknife pseudo-values calculated.}
 
-\item{clindat}{A metadata/phenotypic data consisting of the clinical 
-and demographic variables that the user wants to include 
-in the regression. (e.g., binary group indicator for 
+\item{clindat}{A metadata/phenotypic data consisting of the clinical
+and demographic variables that the user wants to include
+in the regression. (e.g., binary group indicator for
 intervention vs. control, continuous age, ...)}
+
+\item{c}{The choice of trimming proportion for the least trimmed estimator of robust regression.
+A value has to be between 0.5 and 1 as specified in ltsReg() function in robustbase package.}
 }
 \value{
 A pseudo-value regression is fitted. Please use pseudoreg.summary()
@@ -41,13 +44,13 @@ phenodat = combinedamgut[, 1:7] # first column is ID, so not using it.
 newindex_grpA = which(combinedamgut$bin_dog == 0)
 newindex_grpB = which(combinedamgut$bin_dog == 1)
 
-# Now, we estimate (and re-estimate) association matrices 
+# Now, we estimate (and re-estimate) association matrices
 # for each group separately.
-asso_matA = asso_mat(OTUdat=OTUtab, group=newindex_grpA) 
-asso_matB = asso_mat(OTUdat=OTUtab, group=newindex_grpB) 
+asso_matA = asso_mat(OTUdat=OTUtab, group=newindex_grpA)
+asso_matB = asso_mat(OTUdat=OTUtab, group=newindex_grpB)
 
 # Calculate the network centrality.
-thetahat_grpA = thetahats(asso_matA$assomat) 
+thetahat_grpA = thetahats(asso_matA$assomat)
 thetahat_grpB = thetahats(asso_matB$assomat)
 
 # Obtain network centrality for the re-estimated association matrices.
@@ -55,7 +58,7 @@ thetahat_drop_grpA = sapply(asso_matA$reest.assomat, thetahats)
 thetahat_drop_grpB = sapply(asso_matB$reest.assomat, thetahats)
 
 # Sample sizes for each group.
-n_A <- length(newindex_grpA) 
+n_A <- length(newindex_grpA)
 n_B <- length(newindex_grpB)
 
 # Now calculate jackknife pseudo-values for each group.
@@ -70,6 +73,6 @@ colnames(thetatilde) = colnames(OTUtab)
 # Fit a pseudo-value regression using jackknife pseudovalues
 # and phenotypic data. A reminder that the phenotypic data should
 # contain a set of predictor variables to be fitted.
-fitmod = pseudoreg(pseudoval=thetatilde, clindat=phenodat)
+fitmod = pseudoreg(pseudoval=thetatilde, clindat=phenodat, c=0.5)
 }
 }

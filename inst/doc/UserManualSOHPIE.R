@@ -37,7 +37,7 @@ newindex_grpB = which(combinedamgut$bin_dog == 1)
 
 ## -----------------------------------------------------------------------------
 SOHPIEres <- SOHPIE_DNA(OTUdat = OTUtab, clindat = phenodat, 
-                        groupA = newindex_grpA, groupB = newindex_grpB)
+                        groupA = newindex_grpA, groupB = newindex_grpB, c = 0.5)
 
 ## -----------------------------------------------------------------------------
 # qval() function will get you a table with q-values.
@@ -98,7 +98,8 @@ asso_mat_drop_diffB61 = mapply('-', est_asso_matB6$reest.assomat,
 ## For changes in network centrality between association matrices estimated from the whole data.
 thetahat_grpA = thetahats(asso_mat_diffA61)
 thetahat_grpB = thetahats(asso_mat_diffB61)
-## For changes in network centrality between association matrices re-estimated from the leave-one-out sample.
+## For changes in network centrality between association matrices 
+## re-estimated from the leave-one-out sample.
 thetahat_drop_grpA = sapply(asso_mat_drop_diffA61, thetahats)
 thetahat_drop_grpB = sapply(asso_mat_drop_diffB61, thetahats)
 
@@ -114,7 +115,7 @@ thetatilde_grpB = thetatildefun(thetahat_grpB, thetahat_drop_grpB, n_B)
 thetatilde = rbind(thetatilde_grpA, thetatilde_grpB)
 
 ## -----------------------------------------------------------------------------
-fitmod = pseudoreg(pseudoval=thetatilde, clindat=phenodat)
+fitmod = pseudoreg(pseudoval=thetatilde, clindat=phenodat, c=0.5)
 
 ## -----------------------------------------------------------------------------
 summary.result = pseudoreg.summary(pseudo.reg.res=fitmod, 

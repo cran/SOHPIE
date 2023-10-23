@@ -16,8 +16,8 @@ A pseudo-value regression is fitted. Please use pseudoreg.summary()
        to output p-values, q-values, and coefficient estimates.
 }
 \description{
-A function to output summary results 
-     (p-values, q-values, and coefficient estimates) 
+A function to output summary results
+     (p-values, q-values, and coefficient estimates)
      from the fitted pseudo-value regression.
 }
 \examples{
@@ -40,13 +40,13 @@ phenodat = combinedamgut[, 1:7] # first column is ID, so not using it.
 newindex_grpA = which(combinedamgut$bin_dog == 0)
 newindex_grpB = which(combinedamgut$bin_dog == 1)
 
-# Now, we estimate (and re-estimate) association matrices 
+# Now, we estimate (and re-estimate) association matrices
 # for each group separately.
-asso_matA = asso_mat(OTUdat=OTUtab, group=newindex_grpA) 
-asso_matB = asso_mat(OTUdat=OTUtab, group=newindex_grpB) 
+asso_matA = asso_mat(OTUdat=OTUtab, group=newindex_grpA)
+asso_matB = asso_mat(OTUdat=OTUtab, group=newindex_grpB)
 
 # Calculate the network centrality.
-thetahat_grpA = thetahats(asso_matA$assomat) 
+thetahat_grpA = thetahats(asso_matA$assomat)
 thetahat_grpB = thetahats(asso_matB$assomat)
 
 # Obtain network centrality for the re-estimated association matrices.
@@ -54,7 +54,7 @@ thetahat_drop_grpA = sapply(asso_matA$reest.assomat, thetahats)
 thetahat_drop_grpB = sapply(asso_matB$reest.assomat, thetahats)
 
 # Sample sizes for each group.
-n_A <- length(newindex_grpA) 
+n_A <- length(newindex_grpA)
 n_B <- length(newindex_grpB)
 
 # Now calculate jackknife pseudo-values for each group.
@@ -69,7 +69,7 @@ colnames(thetatilde) = colnames(OTUtab)
 # Fit a pseudo-value regression using jackknife pseudovalues
 # and phenotypic data. A reminder that the phenotypic data should
 # contain a set of predictor variables to be fitted.
-fitmod = pseudoreg(pseudoval=thetatilde, clindat=phenodat)
+fitmod = pseudoreg(pseudoval=thetatilde, clindat=phenodat, c=0.5)
 
 # Extract summary results from the fitted model from fitmod object above.
 summary.result = pseudoreg.summary(pseudo.reg.res=fitmod, taxanames=colnames(OTUtab))

@@ -4,7 +4,7 @@
 \alias{SOHPIE_DNA}
 \title{SOHPIE_DNA}
 \usage{
-SOHPIE_DNA(OTUdat, clindat, groupA, groupB)
+SOHPIE_DNA(OTUdat, clindat, groupA, groupB, c)
 }
 \arguments{
 \item{OTUdat}{An OTU table with subjects in rows and taxa in columns.}
@@ -18,6 +18,9 @@ of binary group variable.}
 
 \item{groupB}{Indices of the subjects in the second category (e.g., living with a dog; see example below with American Gut Project sample data)
 of binary group variable.}
+
+\item{c}{The choice of trimming proportion for the least trimmed estimator of robust regression.
+A value has to be between 0.5 and 1 as specified in ltsReg() function in robustbase package.}
 }
 \value{
 A list containing three data frame objects returned from this SOHPIE_DNA main function. A user will see
@@ -47,7 +50,7 @@ newindex_grpA = which(combinedamgut$bin_dog == 0)
 newindex_grpB = which(combinedamgut$bin_dog == 1)
 
 SOHPIEres <- SOHPIE_DNA(OTUdat = OTUtab, clindat = phenodat,
-groupA = newindex_grpA, groupB = newindex_grpB)
+groupA = newindex_grpA, groupB = newindex_grpB, c = 0.5)
 }
 }
 \references{

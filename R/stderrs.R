@@ -1,11 +1,12 @@
-#' @title coeff
+#' @title stderrs
 #'
-#' @description A function to retrieve a vector of coefficient estimates
-#'    of all predictor variables in the pseudo-value regression model.
+#' @description A function to retrieve a vector of standard error (stderr)
+#'    of coefficient estimates (betahats) all predictor variables in the pseudo-value regression model.
 #'
 #' @param SOHPIEres An object called after running SOHPIE_DNA.
 #'
-#' @return A table that includes coefficient estimates for all variables included in the fitted model.
+#' @return A table that includes standard error of betahats
+#' for all predictors regressed in the fitted model.
 #'
 #' @examples
 #' \donttest{
@@ -26,12 +27,12 @@
 #' SOHPIEres <- SOHPIE_DNA(OTUdat = OTUtab, clindat = phenodat,
 #' groupA = newindex_grpA, groupB = newindex_grpB, c = 0.5)
 #'
-#' # coeff() function will return coefficient estimates only.
-#' coeff(SOHPIEres)
+#' # stderrs() function will return standard error of betahats only.
+#' stderrs(SOHPIEres)
 #' }
 #' @export
 
-coeff <- function(SOHPIEres) {
-  coefftab <- SOHPIEres$beta_hat
-  return(coefftab = coefftab)
+stderrs <- function(SOHPIEres) {
+  stderrstab <- SOHPIEres$stderrs
+  return(stderrstab = stderrstab)
 }

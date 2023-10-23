@@ -4,7 +4,7 @@ OTUtab = as.data.frame(combinedamgut[ , 8:37])
 phenodat = combinedamgut[ ,1:7]
 newindex_grpA <- which(combinedamgut$bin_dog == 0)
 newindex_grpB <- which(combinedamgut$bin_dog == 1)
-SOHPIEres <- SOHPIE_DNA(OTUdat = OTUtab, clindat = phenodat, groupA = newindex_grpA, groupB = newindex_grpB)
+SOHPIEres <- SOHPIE_DNA(OTUdat = OTUtab, clindat = phenodat, groupA = newindex_grpA, groupB = newindex_grpB,c=0.5)
 
 # Create a function to check the sign of p-values
 # and adjusted p-values:

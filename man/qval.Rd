@@ -33,7 +33,7 @@ phenodat = combinedamgut[, 1:7] # first column is ID, so not using it.
  newindex_grpB = which(combinedamgut$bin_dog == 1)
 
 SOHPIEres <- SOHPIE_DNA(OTUdat = OTUtab, clindat = phenodat,
-groupA = newindex_grpA, groupB = newindex_grpB)
+groupA = newindex_grpA, groupB = newindex_grpB, c = 0.5)
 
 # Create an object to keep the table with q-values using qval() function.
 qvaltab <- qval(SOHPIEres)

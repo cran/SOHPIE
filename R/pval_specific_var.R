@@ -1,11 +1,14 @@
-#' @title coeff
+#' @title pval_specific_var
 #'
-#' @description A function to retrieve a vector of coefficient estimates
-#'    of all predictor variables in the pseudo-value regression model.
+#' @description A function to retrieve a vector of p-values of each taxa
+#'    for one specific variable. In other words, this will be useful for
+#'    quickly accessing the taxa-specific p-values for main binary group variable
+#'    (or other specific variable/covariate).
 #'
-#' @param SOHPIEres An object called after running SOHPIE_DNA.
+#' @param pvaltab A table that includes p-values for a specific variable.
+#' @param varname Specify the name of the variable of interest.
 #'
-#' @return A table that includes coefficient estimates for all variables included in the fitted model.
+#' @return A vector of p-values for a single variable from the model.
 #'
 #' @examples
 #' \donttest{
@@ -26,12 +29,15 @@
 #' SOHPIEres <- SOHPIE_DNA(OTUdat = OTUtab, clindat = phenodat,
 #' groupA = newindex_grpA, groupB = newindex_grpB, c = 0.5)
 #'
-#' # coeff() function will return coefficient estimates only.
-#' coeff(SOHPIEres)
+#' # Create an object to keep the table with p-values using pval() function.
+#' pvaltab <- pval(SOHPIEres)
+#'
+#' # Retrieve a vector of p-values for a single variable of interest.
+#' pval_specific_var(pvaltab = pvaltab, varname = "bin_dog")
 #' }
 #' @export
 
-coeff <- function(SOHPIEres) {
-  coefftab <- SOHPIEres$beta_hat
-  return(coefftab = coefftab)
+pval_specific_var <- function(pvaltab, varname) {
+  pvalvec <- pvaltab[varname]
+  return(pvalvec = pvalvec)
 }

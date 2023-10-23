@@ -1,11 +1,11 @@
-#' @title coeff
+#' @title pval
 #'
-#' @description A function to retrieve a vector of coefficient estimates
-#'    of all predictor variables in the pseudo-value regression model.
+#' @description A function to retrieve a vector of p-values of each taxa
+#'    for all variables that are included in the pseudo-value regression model.
 #'
 #' @param SOHPIEres An object called after running SOHPIE_DNA.
 #'
-#' @return A table that includes coefficient estimates for all variables included in the fitted model.
+#' @return A table that includes p-values for all predictor variables considered in the regresson.
 #'
 #' @examples
 #' \donttest{
@@ -26,12 +26,12 @@
 #' SOHPIEres <- SOHPIE_DNA(OTUdat = OTUtab, clindat = phenodat,
 #' groupA = newindex_grpA, groupB = newindex_grpB, c = 0.5)
 #'
-#' # coeff() function will return coefficient estimates only.
-#' coeff(SOHPIEres)
+#' # Create an object to keep the table with p-values using qval() function.
+#' pvaltab <- pval(SOHPIEres)
 #' }
 #' @export
 
-coeff <- function(SOHPIEres) {
-  coefftab <- SOHPIEres$beta_hat
-  return(coefftab = coefftab)
+pval <- function(SOHPIEres) {
+  pvaltab <- SOHPIEres$p_values
+  return(pvaltab = pvaltab)
 }

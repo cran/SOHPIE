@@ -11,6 +11,8 @@
 #'               of binary group variable.
 #' @param groupB Indices of the subjects in the second category (e.g., living with a dog; see example below with American Gut Project sample data)
 #'               of binary group variable.
+#' @param c  The choice of trimming proportion for the least trimmed estimator of robust regression.
+#'           A value has to be between 0.5 and 1 as specified in ltsReg() function in robustbase package.
 #'
 #' @return A list containing three data frame objects returned from this SOHPIE_DNA main function. A user will see
 #'         beta coefficients, p-values, and adjusted p-values (q-values)
@@ -38,7 +40,7 @@
 #' newindex_grpB = which(combinedamgut$bin_dog == 1)
 #'
 #' SOHPIEres <- SOHPIE_DNA(OTUdat = OTUtab, clindat = phenodat,
-#' groupA = newindex_grpA, groupB = newindex_grpB)
+#' groupA = newindex_grpA, groupB = newindex_grpB, c = 0.5)
 #' }
 #' @export
 #' @import robustbase
@@ -47,7 +49,7 @@
 #' @import gtools
 #' @import fdrtool
 
-SOHPIE_DNA <- function(OTUdat, clindat, groupA, groupB) {
+SOHPIE_DNA <- function(OTUdat, clindat, groupA, groupB, c) {
       est_method = sparcc # estimate the association matrix/network via SparCC
 
       ########################################################################################
@@ -114,18 +116,21 @@ SOHPIE_DNA <- function(OTUdat, clindat, groupA, groupB) {
         m <- thetatilde[, i]
         df <- data.frame(clindat,
                          m = m)
-        fit <- ltsReg(m ~ ., data = df, mcd=FALSE) # include a set of covariates in this model
+        fit <- ltsReg(m ~ ., data = df, mcd=FALSE, alpha=c) # include a set of covariates in this model
         return(fit)
       })
 
-      ### Obtain p-values (and coefficient estimates if interested) for each taxa:
+      ### Obtain p-values and coefficient estimates and  if interested) for each taxa:
+      ### 10/20/2023: Standard Error (SE) is also available
       beta_hat = vector(mode = "list", ncol(thetatilde))
       p_values = vector(mode = "list", ncol(thetatilde))
+      stderrs = vector(mode = "list", ncol(thetatilde))
       k = NULL
       for(k in 1:ncol(thetatilde)) {
         # Estimates for the beta coefficients:
         beta_hat[[k]] <- summary(pseudo.reg.res[[k]])$coef[-1, "Estimate"]
         p_values[[k]] <- summary(pseudo.reg.res[[k]])$coef[-1, "Pr(>|t|)"]
+        stderrs[[k]] <- summary(pseudo.reg.res[[k]])$coef[-1, "Std. Error"]
 
       }
 
@@ -135,9 +140,12 @@ SOHPIE_DNA <- function(OTUdat, clindat, groupA, groupB) {
       p_values = as.data.frame(bind_rows(p_values))  # Convert list into data.frame
       rownames(p_values) <- colnames(OTUdat) # Map the taxa names to the data.frame for p-values
 
+      stderrs = as.data.frame(bind_rows(stderrs))  # Convert list into data.frame
+      rownames(stderrs) <- colnames(OTUdat) # Map the taxa names to the data.frame for stderr
+
       # Compute the q-values :
       suppressWarnings({q_values = as.data.frame(apply(p_values, 2, function(x) fdrtool(x, statistic = "pvalue", plot=FALSE, verbose = FALSE)$qval))})
       rownames(q_values) <- colnames(OTUdat) # Map the taxa names to the data.frame for q-values
 
-      return(list(beta_hat = beta_hat, p_values = p_values, q_values = q_values))
+      return(list(beta_hat = beta_hat, p_values = p_values, q_values = q_values, stderrs = stderrs))
 }

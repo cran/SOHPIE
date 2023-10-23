@@ -1,10 +1,10 @@
 ---
 title: "An Introduction to SOHPIE"
 author: "Seungjun Ahn"
-date: "July 1st, 2023"
+date: "October 20th, 2023"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Intro to SOHPIE}
+  %\VignetteIndexEntry{An Introduction to SOHPIE}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -67,14 +67,14 @@ newindex_grpB = which(combinedamgut$bin_dog == 1)
 
 
 ### Fit a pseudo-value regression via SOHPIE_DNA() function:
-Upon our data processing step above is complete, we can then fit a pseudo-value regression using `SOHPIE_DNA` function. An important note! Please provide the object name of each OTU table and clinical/demographic data (i.e. metadata) separately in the function. In addition, you must indicate the object names of the indices for each group of a binary indicator variable that is used as a main predictor variable (e.g. living with a dog vs. without a dog).
+Upon our data processing step above is complete, we can then fit a pseudo-value regression using `SOHPIE_DNA` function. An important note! Please provide the object name of each OTU table and clinical/demographic data (i.e. metadata) separately in the function. In addition, you must indicate the object names of the indices for each group of a binary indicator variable that is used as a main predictor variable (e.g. living with a dog vs. without a dog). Lastly, you must enter a trimming proportion `c`, which ranges from 0.5 to 1. 
 ```{r}
 SOHPIEres <- SOHPIE_DNA(OTUdat = OTUtab, clindat = phenodat, 
-                        groupA = newindex_grpA, groupB = newindex_grpB)
+                        groupA = newindex_grpA, groupB = newindex_grpB, c = 0.5)
 ```
 
 ### Additional features available in SOHPIE package:
-Now, I would like to show you that SOHPIE has some convenient tools/functions after fitting a pseudo-value regression. There are functions that you can quickly extract names of taxa that are significantly differentially connected (DC; `DCtaxa_tab`), as well as adjusted p-values (q-values; `qval` and `qval_specific_var`) and coefficient estimates (`coeff` and `coeff_specific_var`) of all variables that are considered in the regression or a specific variable.
+Now, I would like to show you that SOHPIE has some convenient tools/functions after fitting a pseudo-value regression. There are functions that you can quickly extract names of taxa that are significantly differentially connected (DC; `DCtaxa_tab`), as well as p-values (`pval` and `pval_specific_var`), adjusted p-values (q-values; `qval` and `qval_specific_var`), coefficient estimates (`coeff` and `coeff_specific_var`), and standard errors (`stderrs` and `stderrs_specific_var`) of all variables that are considered in the regression or a specific variable.
 ```{r}
 # qval() function will get you a table with q-values.
 qval(SOHPIEres)
@@ -151,7 +151,8 @@ Then, for each group, we calculate changes in network centrality of each taxa be
 ## For changes in network centrality between association matrices estimated from the whole data.
 thetahat_grpA = thetahats(asso_mat_diffA61)
 thetahat_grpB = thetahats(asso_mat_diffB61)
-## For changes in network centrality between association matrices re-estimated from the leave-one-out sample.
+## For changes in network centrality between association matrices 
+## re-estimated from the leave-one-out sample.
 thetahat_drop_grpA = sapply(asso_mat_drop_diffA61, thetahats)
 thetahat_drop_grpB = sapply(asso_mat_drop_diffB61, thetahats)
 ```
@@ -169,9 +170,9 @@ thetatilde_grpB = thetatildefun(thetahat_grpB, thetahat_drop_grpB, n_B)
 thetatilde = rbind(thetatilde_grpA, thetatilde_grpB)
 ```
 
-Fit a robust regression regressing covariates on pseudo-values. Please note that the metadata/phenotype data should contain a set of predictors to be fitted only, so choose them wisely.
+Fit a robust regression regressing covariates on pseudo-values. Please note that the metadata/phenotype data should contain a set of predictors to be fitted only, so choose them wisely. Additionally, a trimming proportion `c` of the least trimmed squares estimator should be entered between 0.5 and 1.
 ```{r}
-fitmod = pseudoreg(pseudoval=thetatilde, clindat=phenodat)
+fitmod = pseudoreg(pseudoval=thetatilde, clindat=phenodat, c=0.5)
 ```
 
 Lastly, we can extract summary results from the fitted model from `fitmod` object above. A list of `data.frame` objects for coefficient estimates, p-values, and q-values will be available.

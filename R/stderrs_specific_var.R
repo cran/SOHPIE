@@ -1,11 +1,12 @@
-#' @title coeff
+#' @title stderrs_specific_var
 #'
-#' @description A function to retrieve a vector of coefficient estimates
-#'    of all predictor variables in the pseudo-value regression model.
+#' @description A function to retrieve a vector of standard error of coefficient estimates (betahats)
+#'  of each taxa for one specific variable.
 #'
-#' @param SOHPIEres An object called after running SOHPIE_DNA.
+#' @param stderrstab A table that includes standard error of betahat for a specific variable.
+#' @param varname Specify the name of the variable of interest.
 #'
-#' @return A table that includes coefficient estimates for all variables included in the fitted model.
+#' @return A vector of standard error of betahats for a single variable from the model.
 #'
 #' @examples
 #' \donttest{
@@ -26,12 +27,16 @@
 #' SOHPIEres <- SOHPIE_DNA(OTUdat = OTUtab, clindat = phenodat,
 #' groupA = newindex_grpA, groupB = newindex_grpB, c = 0.5)
 #'
-#' # coeff() function will return coefficient estimates only.
-#' coeff(SOHPIEres)
+#' # stderrs() function will return standard error of betahats only.
+#' stderrstab <- stderrs(SOHPIEres)
+#'
+#' # stderrs_specific_var() will return standard error of coefficient estimates of
+#' # a single variable of interest.
+#' stderrs_specific_var(stderrstab = stderrstab, varname = "bin_dog")
 #' }
 #' @export
 
-coeff <- function(SOHPIEres) {
-  coefftab <- SOHPIEres$beta_hat
-  return(coefftab = coefftab)
+stderrs_specific_var <- function(stderrstab, varname) {
+        stderrsvec <- stderrstab[varname]
+        return(stderrsvec = stderrsvec)
 }
